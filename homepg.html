@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>todo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<style>
+body{
+    display: flex;
+    flex-direction: column;
+    background-color:antiquewhite;
+}
+button:hover{
+    color: white;
+    font-weight: 700; 
+    background-color: black;
+    border: 4px solid black; 
+}
+button{
+    margin: 0 5px; 
+    color: black;
+    font-weight: 700; 
+    border: 4px solid black; 
+}
+.todovalue{
+    font-size: larger;
+    justify-content: center;
+    width: 60%;
+    border: 2px solid black;
+}
+li:hover{
+    background-color: rgb(252, 83, 187);
+    font-weight: 700;
+}
+.lists{
+    
+    display: flex;
+    justify-content:space-between;
+    list-style-type: none;
+    text-indent: 20px;
+    margin : 10px;
+}
+li{
+   padding: 40px;
+    flex-grow: 1; 
+    padding: 3px; 
+    background-color: hwb(342 65% 4%);
+    border-radius: 15px;
+    font-weight: 600; 
+}
+.container {
+    height: 40px;
+    display: flex;
+    justify-content: right; /* Place buttons on opposite sides */
+    width: 100%; /* Ensure it takes full width within the <li> */
+        margin: 5px;
+}
+</style>
+
+</head>
+
+
+<body class=".bg-black.bg-gradient " >
+    <h1 class="text-center fst-italic "  >TODO LIST</h1>
+    <form action="">
+
+        <div >
+            <input type="text" value="" class="todovalue m-3 " placeholder="ENTER HERE" >
+            <button class="btn" style="border: 4px solid rgb(8, 8, 8); background-color: rgb(229, 229, 240); " >ADD TODO</button>
+        </form>
+        </div >
+        <div class="todolists">
+        </div>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+     </script>
+        <script>
+        const todolists = document.querySelector(".todolists");
+        const todovalue = document.querySelector(".todovalue");
+        // todolistvalue is empty array 
+        let todolistvalue = [];
+
+//here get data from local storage and also catain empty array if any chance user done enter any value then empty array store
+        const getdatafromlocalstorage = () => {
+            return JSON.parse(localStorage.getItem("tododata")) || [];
+        }
+
+
+// add todo in local storage in JSON format
+        const addtodolistlocalstorage = (todo) => {
+            return localStorage.setItem("tododata", JSON.stringify(todo));
+        }
+        // const showtodo =()=>{
+        //     todolistvalue = getdatafromlocalstorage();
+        //     todolistvalue.forEach((currtodo) => {
+        //         const lielement = document.createElement("li");
+        //         lielement.innerHTML = currtodo;
+        //         todolists.append(lielement);
+ 
+        //     }); 
+
+        // }
+        const showtodo = () => {
+            todolistvalue = getdatafromlocalstorage();
+
+            todolistvalue.forEach((currtodo, index) => {
+                // Create a new <li> element for each todo
+                const lielement = document.createElement("li");
+                lielement.textContent = currtodo;
+                lielement.classList.add("lists");
+
+                 const box = document.createElement("span");
+                 box.classList.add("container");
+
+                // Create the update button
+                const newButton = document.createElement("button");
+                newButton.textContent = "Update!";
+                newButton.classList.add("update-button");
+                 
+               
+
+                // Create delete button
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.classList.add("delete-button");
+
+                // Append the buttons to the <li> element
+                    box.appendChild(newButton);
+                    box.appendChild(deleteButton);
+                    lielement.appendChild(box);
+                    
+
+                // Append the <li> element to the todolist container
+                todolists.appendChild(lielement);
+
+                // Add update button event listener
+                newButton.addEventListener("click", () => {
+                    const newTodoText = prompt("Update your todo", currtodo);
+                    if (newTodoText && newTodoText !== currtodo) {
+                        todolistvalue[index] = newTodoText;
+                        addtodolistlocalstorage(todolistvalue);
+                        lielement.firstChild.textContent = newTodoText; // Update the text content of the todo
+                    }
+                });
+
+                // Add delete button event listener
+                deleteButton.addEventListener("click", () => {
+                    todolistvalue = todolistvalue.filter(todo => todo !== currtodo);
+                    addtodolistlocalstorage(todolistvalue);
+                    todolists.removeChild(lielement); // Remove the todo from the DOM
+                });
+            });
+        };
+// remove
+// const removetodolists=(e)=>{
+//     //here first "e" represent the  "event object" when a event is triggred then the event object pass the event handler function , "target " is the property to represent the element of which triggred , textContent is the property of DOM element that represent the text content of element .
+//    console.log(e.target.textContent);
+//    let data = e.target;
+//      console.log(data);
+//      //"currentTodo" is the content inside the list
+//      const currentTodo = data.textContent;
+// //
+//      todolistvalue = todolistvalue.filter((todo)=>todo !== currentTodo);
+//     addtodolistlocalstorage(todolistvalue);
+//  data.remove();
+   
+    
+// }
+
+ //---1----       //after button clicked addtodolist() call with "e" event object pass
+        const addtodolist = (e) => {
+            //preventing the default functionality of form refreshing and reloading
+            e.preventDefault();
+            //here we get the data from local storage in todolistvalue[]
+            todolistvalue = getdatafromlocalstorage();
+            //todovalue.value= is the user data which user write on input box , trim() remove the space from bothside. here the user data after trim() store in "newtodo"
+            let newtodo = todovalue.value.trim();
+            
+todovalue.value = "";
+            // userdata(newtodo) length is not equal to the 0 then only the below functionality work
+            if (newtodo.length !== 0 && !todolistvalue.includes(newtodo)) {
+               
+// empty array = todolistvalue[] push the newtodo(userdata after trim())
+                todolistvalue.push(newtodo);
+
+                //add to local storage in array format
+                addtodolistlocalstorage(todolistvalue);
+//lielement is variable , using DOM creating lists where the todo store 
+                const lielement = document.createElement("li");
+                //list k ander hmara newtodo(userdata) store hoga 
+                lielement.innerHTML = newtodo;
+                lielement.classList.add("lists");
+
+                const box = document.createElement("span");
+                 box.classList.add("container");
+
+
+ // Create update and delete buttons for the new todo
+ const newButton = document.createElement("button");
+ //here we give label to button is "update"
+                newButton.textContent = "Update!";
+//here we add classlist "class" to button
+                newButton.classList.add("update-button");
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.classList.add("delete-button");
+
+                // Append buttons to the <li>
+                    //here we append bth button into list
+                    box.appendChild(newButton);
+                    box.appendChild(deleteButton);
+                    lielement.appendChild(box);
+                    
+
+                // Append the new <li> to the todolist container
+                  //  here we append list to parent  div"todolists"
+                todolists.appendChild(lielement);
+
+                // Add event listeners to the new buttons
+                newButton.addEventListener("click", () => {
+                    const newTodoText = prompt("Update your todo", newtodo);
+                    if (newTodoText && newTodoText !== newtodo) {
+                        todolistvalue[todolistvalue.indexOf(newtodo)] = newTodoText;
+                        addtodolistlocalstorage(todolistvalue);
+                        lielement.firstChild.textContent = newTodoText; // Update the todo text
+                    }
+                });
+
+                deleteButton.addEventListener("click", () => {
+                    todolistvalue = todolistvalue.filter(todo => todo !== newtodo);
+                    addtodolistlocalstorage(todolistvalue);
+                    todolists.removeChild(lielement); // Remove the todo from the DOM
+                });
+            }
+        };
+
+
+// to show the todo list on body
+showtodo();
+
+        document.querySelector(".btn").addEventListener("click", (e) => {
+            addtodolist(e);
+        });
+    // todolists.addEventListener("click", (e)=>{removetodolists(e);});
+    </script>
+</body>
+
+</html>
+
+
+git config --global user.name "PRATEEKSHA-RAGHAV"
+
+git config --global user.email "pratisharajput930@gmail.com"
